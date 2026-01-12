@@ -1,6 +1,10 @@
 import { randomBytes, randomInt } from 'crypto';
 import chalk from 'chalk';
 
+async function getrandomcommit() {
+  const commit = await fetch('http://whatthecommit.com/index.txt');
+  return commit.text();
+}
 export async function random(args) {
   if (args.length === 0) {
     console.log(randomInt(0, 1000000));
@@ -32,7 +36,10 @@ export async function random(args) {
     const length = parseInt(args[1]) || 16;
     const bytes = randomBytes(length);
     console.log(bytes.toString('hex'));
-  } else {
+  } else if (type === 'commit') {
+    const commit = await getrandomcommit();
+    console.log(commit);
+  }else {
     const num = parseInt(type);
     if (!isNaN(num)) {
       console.log(randomInt(0, num + 1));
