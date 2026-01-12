@@ -238,6 +238,89 @@ export const commandMetadata = {
     examples: ['next'],
     aliases: [],
     arguments: []
+  },
+  'bookmark': {
+    description: 'Manage directory bookmarks for quick navigation',
+    usage: 'bookmark [list|add|remove|go] <name> [path]',
+    examples: [
+      'bookmark add proj ~/projects',
+      'bookmark list',
+      'bookmark remove proj',
+      'cd proj'
+    ],
+    aliases: [],
+    arguments: [
+      { name: 'action', description: 'Action: list, add, remove, or go', required: false },
+      { name: 'name', description: 'Bookmark name', required: false },
+      { name: 'path', description: 'Directory path (default: current directory)', required: false }
+    ]
+  },
+  'cp': {
+    description: 'Copy files',
+    usage: 'cp <source> <dest>',
+    examples: ['cp file.txt backup.txt', 'cp file.txt /backup/'],
+    aliases: ['copy'],
+    arguments: [
+      { name: 'source', description: 'Source file path', required: true },
+      { name: 'dest', description: 'Destination file or directory path', required: true }
+    ]
+  },
+  'mv': {
+    description: 'Move files',
+    usage: 'mv <source> <dest>',
+    examples: ['mv file.txt newname.txt', 'mv file.txt /backup/'],
+    aliases: ['move'],
+    arguments: [
+      { name: 'source', description: 'Source file path', required: true },
+      { name: 'dest', description: 'Destination file or directory path', required: true }
+    ]
+  },
+  'find': {
+    description: 'Search for files by pattern',
+    usage: 'find [directory] <pattern>',
+    examples: ['find *.js', 'find src *.ts', 'find test*'],
+    aliases: [],
+    arguments: [
+      { name: 'directory', description: 'Directory to search in (default: current)', required: false },
+      { name: 'pattern', description: 'File name pattern (supports * wildcard)', required: true }
+    ]
+  },
+  'grep': {
+    description: 'Search for text in files',
+    usage: 'grep <pattern> <file> [file...]',
+    examples: ['grep "function" file.js', 'grep error *.log'],
+    aliases: [],
+    arguments: [
+      { name: 'pattern', description: 'Search pattern (regex)', required: true },
+      { name: 'file', description: 'File(s) to search in', required: true }
+    ]
+  },
+  'theme': {
+    description: 'Manage prompt themes',
+    usage: 'theme [list|set|current] [name]',
+    examples: ['theme list', 'theme set dark', 'theme current'],
+    aliases: [],
+    arguments: [
+      { name: 'action', description: 'Action: list, set, or current', required: false },
+      { name: 'name', description: 'Theme name (for set)', required: false }
+    ]
+  },
+  'config': {
+    description: 'Manage NovaShell configuration (command aliases, custom commands, settings)',
+    usage: 'config [show|alias|custom|remove|edit] [args...]',
+    examples: [
+      'config show',
+      'config alias list ls',
+      'config custom hello "echo Hello"',
+      'config remove hello',
+      'config edit'
+    ],
+    aliases: [],
+    arguments: [
+      { name: 'action', description: 'Action: show, alias, custom, remove, edit', required: false },
+      { name: 'name', description: 'Command/alias name', required: false },
+      { name: 'command', description: 'Command to alias/execute', required: false }
+    ]
   }
 };
 

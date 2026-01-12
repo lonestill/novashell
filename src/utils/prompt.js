@@ -2,8 +2,13 @@ import { cwd } from 'process';
 import { platform, homedir } from 'os';
 import chalk from 'chalk';
 import { getGitInfo } from './git.js';
+import { getCurrentThemeSync, getTheme } from './themes.js';
 
 export function getPrompt() {
+  const currentTheme = getCurrentThemeSync();
+  const theme = getTheme(currentTheme);
+  const promptColors = theme.prompt;
+  
   const currentDir = cwd();
   const home = homedir();
   const isWindows = platform() === 'win32';
@@ -17,16 +22,17 @@ export function getPrompt() {
     displayPath = displayPath.replace(/\\/g, '/');
   }
   
-  let prompt = chalk.green('novashell') + chalk.gray(':') + 
-               chalk.cyan(displayPath);
+  let prompt = chalk[promptColors.shellName.color]('novashell') + 
+               chalk[promptColors.separator.color](':') + 
+               chalk[promptColors.path.color](displayPath);
   
   const gitInfo = getGitInfo();
   if (gitInfo) {
-    prompt += chalk.gray(' (');
-    prompt += chalk.magenta(gitInfo.branch);
+    prompt += chalk[promptColors.separator.color](' (');
+    prompt += chalk[promptColors.gitBranch.color](gitInfo.branch);
     
     if (gitInfo.hasChanges) {
-      prompt += chalk.yellow('*');
+      prompt += chalk[promptColors.gitChanges.color]('*');
     }
     
     if (gitInfo.ahead > 0) {
@@ -37,10 +43,10 @@ export function getPrompt() {
       prompt += chalk.red(` ${gitInfo.behind}↓`);
     }
     
-    prompt += chalk.gray(')');
+    prompt += chalk[promptColors.separator.color](')');
   }
   
-  prompt += chalk.yellow('$ ') + chalk.reset('');
+  prompt += chalk[promptColors.prompt.color]('$ ') + chalk.reset('');
   
   return prompt;
 }

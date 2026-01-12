@@ -22,6 +22,14 @@ import { todoCommand } from './commands/todo.js';
 import { whereCommand } from './commands/where.js';
 import { suggestCommand } from './commands/suggest.js';
 import { nextCommand } from './commands/next.js';
+import { bookmarkCommand } from './commands/bookmark.js';
+import { cpCommand } from './commands/cp.js';
+import { mvCommand } from './commands/mv.js';
+import { findCommand } from './commands/find.js';
+import { grepCommand } from './commands/grep.js';
+import { themeCommand } from './commands/theme.js';
+import { configCommand } from './commands/config.js';
+import { getCustomCommandsSync, getCommandAliasesSync } from './utils/config.js';
 
 export class CommandManager {
   constructor() {
@@ -64,6 +72,66 @@ export class CommandManager {
     this.register('where', whereCommand);
     this.register('suggest', suggestCommand);
     this.register('next', nextCommand);
+    this.register('bookmark', bookmarkCommand);
+    this.register('cp', cpCommand);
+    this.register('copy', cpCommand);
+    this.register('mv', mvCommand);
+    this.register('move', mvCommand);
+    this.register('find', findCommand);
+    this.register('grep', grepCommand);
+    this.register('theme', themeCommand);
+    this.register('config', configCommand);
+    
+    this.loadCustomCommands();
+    this.loadCommandAliases();
+  }
+  
+  loadCustomCommands() {
+    const customCommands = getCustomCommandsSync();
+    for (const [name, command] of Object.entries(customCommands)) {
+      this.registerCustomCommand(name, command);
+    }
+  }
+  
+  loadCommandAliases() {
+    const aliases = getCommandAliasesSync();
+    for (const [alias, command] of Object.entries(aliases)) {
+      if (!this.commands.has(alias)) {
+        if (this.commands.has(command)) {
+          this.register(alias, this.commands.get(command));
+        }
+      }
+    }
+  }
+  
+  registerCustomCommand(name, command) {
+    const handler = async (args) => {
+      const { spawn } = await import('child_process');
+      return new Promise((resolve) => {
+        const fullCommand = command + (args.length > 0 ? ' ' + args.map(arg => {
+          if (arg.includes(' ')) {
+            return `"${arg.replace(/"/g, '\\"')}"`;
+          }
+          return arg;
+        }).join(' ') : '');
+        
+        const child = spawn(fullCommand, {
+          stdio: 'inherit',
+          shell: true
+        });
+        
+        child.on('error', (error) => {
+          console.error(chalk.red(`Custom command failed: ${error.message}`));
+          resolve(1);
+        });
+        
+        child.on('exit', (code) => {
+          resolve(code || 0);
+        });
+      });
+    };
+    
+    this.register(name, handler);
   }
 
   register(name, handler) {

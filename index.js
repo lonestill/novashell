@@ -12,6 +12,7 @@ import { saveCommand, closeDB } from './src/utils/historyDB.js';
 import { logCommand } from './src/utils/logger.js';
 import { sendNotification } from './src/utils/notifications.js';
 import { getAlias } from './src/utils/aliases.js';
+import { getCustomCommandsSync } from './src/utils/config.js';
 
 class NovaShell {
   constructor() {
@@ -79,7 +80,10 @@ class NovaShell {
     let output = null;
 
     try {
-      if (this.commandManager.hasCommand(command)) {
+      const customCommands = getCustomCommandsSync();
+      if (customCommands[command]) {
+        exitCode = await this.executeSystemCommand(customCommands[command], args) || 0;
+      } else if (this.commandManager.hasCommand(command)) {
         await this.commandManager.execute(command, args);
         exitCode = 0;
       } 

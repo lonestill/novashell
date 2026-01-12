@@ -2,6 +2,7 @@ $ErrorActionPreference = "Stop"
 
 $REPO_URL = "https://github.com/lonestill/novashell.git"
 $INSTALL_DIR = "$env:USERPROFILE\.novashell"
+$DATA_DIR = "$env:USERPROFILE\.novashell"
 
 function Write-Info {
     Write-Host $args -ForegroundColor Green
@@ -57,31 +58,99 @@ try {
 Write-Info "✓ git found"
 Write-Host ""
 
+$isUpdate = $false
+$removeData = $false
+
 if (Test-Path $INSTALL_DIR) {
-    Write-Warn "Installation directory already exists: $INSTALL_DIR"
-    $response = Read-Host "Do you want to remove it and reinstall? (y/N)"
-    if ($response -eq "y" -or $response -eq "Y") {
-        Remove-Item -Recurse -Force $INSTALL_DIR
-        Write-Info "Removed existing installation"
+    Write-Warn "NovaShell installation directory already exists: $INSTALL_DIR"
+    Write-Host ""
+    Write-Info "What would you like to do?"
+    Write-Info "  1. Update code (keep your config, history, and data)"
+    Write-Info "  2. Full reinstall (remove everything and start fresh)"
+    Write-Info "  3. Cancel"
+    Write-Host ""
+    $choice = Read-Host "Enter your choice (1/2/3)"
+    
+    if ($choice -eq "1") {
+        $isUpdate = $true
+        Write-Info "Updating NovaShell..."
+        Write-Host ""
+        
+        $configExists = Test-Path "$DATA_DIR\config.json"
+        $dbExists = Test-Path "$DATA_DIR\history.db"
+        $otherDataExists = (Test-Path "$DATA_DIR\logs") -or (Test-Path "$DATA_DIR\sessions") -or (Test-Path "$DATA_DIR\bookmarks.json") -or (Test-Path "$DATA_DIR\aliases.json") -or (Test-Path "$DATA_DIR\todos.json")
+        
+        if ($configExists -or $dbExists -or $otherDataExists) {
+            Write-Warn "Found user data (config, history, sessions, etc.)"
+            $removeDataChoice = Read-Host "Do you want to remove user data? (y/N)"
+            if ($removeDataChoice -eq "y" -or $removeDataChoice -eq "Y") {
+                $removeData = $true
+            }
+        }
+    } elseif ($choice -eq "2") {
+        Write-Warn "This will remove all NovaShell files including your config, history, and data."
+        $confirm = Read-Host "Are you sure? (y/N)"
+        if ($confirm -eq "y" -or $confirm -eq "Y") {
+            Remove-Item -Recurse -Force $INSTALL_DIR
+            Write-Info "Removed existing installation"
+            $isUpdate = $false
+        } else {
+            Write-Error "Installation cancelled"
+        }
     } else {
         Write-Error "Installation cancelled"
     }
 }
 
-Write-Info "Cloning repository..."
-try {
-    git clone $REPO_URL $INSTALL_DIR
-    if ($LASTEXITCODE -ne 0) {
-        Write-Error "Failed to clone repository. Please check your internet connection and repository URL."
+if ($isUpdate) {
+    Set-Location $INSTALL_DIR
+    
+    Write-Info "Pulling latest changes..."
+    try {
+        git pull
+        if ($LASTEXITCODE -ne 0) {
+            Write-Warn "Git pull failed. Attempting to reset and pull..."
+            git fetch origin
+            git reset --hard origin/main
+            if ($LASTEXITCODE -ne 0) {
+                Write-Error "Failed to update repository"
+            }
+        }
+    } catch {
+        Write-Error "Failed to update repository: $_"
     }
-} catch {
-    Write-Error "Failed to clone repository: $_"
+    
+    Write-Info "✓ Code updated"
+    Write-Host ""
+    
+    if ($removeData) {
+        Write-Info "Removing user data..."
+        if (Test-Path "$DATA_DIR\config.json") { Remove-Item -Force "$DATA_DIR\config.json" }
+        if (Test-Path "$DATA_DIR\history.db") { Remove-Item -Force "$DATA_DIR\history.db" }
+        if (Test-Path "$DATA_DIR\logs") { Remove-Item -Recurse -Force "$DATA_DIR\logs" }
+        if (Test-Path "$DATA_DIR\sessions") { Remove-Item -Recurse -Force "$DATA_DIR\sessions" }
+        if (Test-Path "$DATA_DIR\bookmarks.json") { Remove-Item -Force "$DATA_DIR\bookmarks.json" }
+        if (Test-Path "$DATA_DIR\aliases.json") { Remove-Item -Force "$DATA_DIR\aliases.json" }
+        if (Test-Path "$DATA_DIR\todos.json") { Remove-Item -Force "$DATA_DIR\todos.json" }
+        Write-Info "✓ User data removed"
+        Write-Host ""
+    }
+} else {
+    Write-Info "Cloning repository..."
+    try {
+        git clone $REPO_URL $INSTALL_DIR
+        if ($LASTEXITCODE -ne 0) {
+            Write-Error "Failed to clone repository. Please check your internet connection and repository URL."
+        }
+    } catch {
+        Write-Error "Failed to clone repository: $_"
+    }
+    
+    Write-Info "✓ Repository cloned"
+    Write-Host ""
+    
+    Set-Location $INSTALL_DIR
 }
-
-Write-Info "✓ Repository cloned"
-Write-Host ""
-
-Set-Location $INSTALL_DIR
 
 Write-Info "Installing dependencies..."
 try {
@@ -133,7 +202,7 @@ Write-Info "======================"
 Write-Host ""
 Write-Info "You can now run NovaShell with:"
 Write-Info "  novashell"
-Write-Info ""
+Write-Host ""
 Write-Info "If the command is not found, restart your terminal or run:"
 Write-Info "  `$env:Path += ';$env:APPDATA\npm'; novashell"
 Write-Host ""

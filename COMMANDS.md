@@ -37,7 +37,7 @@ ls -la
 ---
 
 ### `cd`
-Change the current directory.
+Change the current directory. Supports bookmark names as directory arguments.
 
 **Usage:**
 ```bash
@@ -50,7 +50,12 @@ cd ..
 cd /home/user/documents
 cd my_folder
 cd ~
+cd mybookmark              # Use bookmark name (see bookmark command)
 ```
+
+**Features:**
+- Supports bookmark names (see `bookmark` command)
+- Defaults to home directory if no argument provided
 
 ---
 
@@ -410,6 +415,137 @@ next
 
 ---
 
+### `bookmark`
+Manage directory bookmarks for quick navigation.
+
+**Usage:**
+```bash
+bookmark [list|add|remove|go] <name> [path]
+```
+
+**Actions:**
+- `list`, `ls`: List all bookmarks
+- `add`, `set <name> [path]`: Add a bookmark (default: current directory)
+- `remove`, `rm`, `delete <name>`: Remove a bookmark
+- `go`, `cd <name>`: Get bookmark path
+
+**Examples:**
+```bash
+bookmark add proj ~/projects
+bookmark add work
+bookmark list
+bookmark remove proj
+cd proj                    # Use bookmark with cd command
+bookmark go work
+```
+
+**Features:**
+- Bookmarks are automatically resolved in `cd` command
+- Shows validity status (✓/✗) for each bookmark
+- Persistent storage across sessions
+
+---
+
+## File Operations (Extended)
+
+### `cp` / `copy`
+Copy files from source to destination.
+
+**Usage:**
+```bash
+cp <source> <dest>
+copy <source> <dest>
+```
+
+**Examples:**
+```bash
+cp file.txt backup.txt
+cp file.txt /backup/
+cp config.json config.backup.json
+```
+
+**Aliases:** `copy`
+
+**Features:**
+- Automatically creates destination directory if needed
+- Warns when overwriting existing files
+- Cross-platform file copying
+
+---
+
+### `mv` / `move`
+Move or rename files.
+
+**Usage:**
+```bash
+mv <source> <dest>
+move <source> <dest>
+```
+
+**Examples:**
+```bash
+mv file.txt newname.txt
+mv file.txt /backup/
+mv old.js new.js
+```
+
+**Aliases:** `move`
+
+**Features:**
+- Supports both moving and renaming
+- Automatically creates destination directory if needed
+- Cross-platform file operations
+
+---
+
+### `find`
+Search for files by pattern.
+
+**Usage:**
+```bash
+find [directory] <pattern>
+```
+
+**Examples:**
+```bash
+find *.js
+find src *.ts
+find test*
+find . "*.json"
+```
+
+**Features:**
+- Supports wildcard patterns (`*`)
+- Recursive directory search
+- Case-insensitive matching
+- Color-coded output (📁 for directories, 📄 for files)
+
+---
+
+### `grep`
+Search for text patterns in files.
+
+**Usage:**
+```bash
+grep <pattern> <file> [file...]
+```
+
+**Examples:**
+```bash
+grep "function" file.js
+grep error *.log
+grep "import.*from" src/*.js
+```
+
+**Features:**
+- Regular expression support
+- Case-insensitive matching
+- Highlighted matches
+- Line numbers displayed
+- Multiple file support
+
+---
+
 ## Navigation
 
 ### `clear` / `cls`
@@ -454,6 +590,63 @@ quit
 ```
 
 **Aliases:** `quit`
+
+---
+
+### `config`
+Manage NovaShell configuration (command aliases, custom commands, settings).
+
+**Usage:**
+```bash
+config [show|alias|custom|remove|edit] [args...]
+```
+
+**Actions:**
+- `show`, `list`: Show current configuration
+- `alias <name> <command>`: Rename/create command alias (e.g., `config alias list ls`)
+- `custom <name> <command>`: Add custom command (e.g., `config custom hello "echo Hello"`)
+- `remove <name>`, `rm`: Remove alias/custom command
+- `edit`: Show config file location
+
+**Examples:**
+```bash
+config show
+config alias list ls                    # Rename 'ls' to 'list'
+config alias dir ls                     # Create alias 'dir' for 'ls'
+config custom hello "echo Hello World"  # Create custom command
+config custom build "npm run build"     # Create custom build command
+config remove hello                     # Remove custom command
+config edit                             # Show config file location
+```
+
+**Features:**
+- Command aliases: Rename built-in commands (e.g., `list` → `ls`)
+- Custom commands: Create shortcuts for frequently used commands
+- Persistent configuration stored in `~/.novashell/config.json`
+- Custom commands support arguments (passed after command name)
+
+**Configuration File:**
+The configuration file is located at `~/.novashell/config.json` and can be edited directly:
+
+```json
+{
+  "commandAliases": {
+    "list": "ls",
+    "dir": "ls"
+  },
+  "customCommands": {
+    "hello": "echo Hello World",
+    "build": "npm run build"
+  },
+  "settings": {
+    "historySize": 1000,
+    "enableNotifications": true,
+    "notificationThreshold": 10000
+  }
+}
+```
+
+**Note:** Command aliases require restarting NovaShell to take effect. Custom commands are available immediately.
 
 ---
 
@@ -657,5 +850,3 @@ All NovaShell data is stored in `~/.novashell/`:
 - Check this document for comprehensive reference
 
 ---
-
-*Last updated: 2024*

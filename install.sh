@@ -4,7 +4,7 @@ set -e
 
 REPO_URL="https://github.com/lonestill/novashell.git"
 INSTALL_DIR="$HOME/.novashell"
-BIN_DIR="$HOME/.local/bin"
+DATA_DIR="$HOME/.novashell"
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -59,27 +59,85 @@ fi
 info "✓ git found"
 echo ""
 
+IS_UPDATE=false
+REMOVE_DATA=false
+
 if [ -d "$INSTALL_DIR" ]; then
-    warn "Installation directory already exists: $INSTALL_DIR"
-    read -p "Do you want to remove it and reinstall? (y/N) " -n 1 -r
-    echo
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
-        rm -rf "$INSTALL_DIR"
-        info "Removed existing installation"
+    warn "NovaShell installation directory already exists: $INSTALL_DIR"
+    echo ""
+    info "What would you like to do?"
+    info "  1. Update code (keep your config, history, and data)"
+    info "  2. Full reinstall (remove everything and start fresh)"
+    info "  3. Cancel"
+    echo ""
+    read -p "Enter your choice (1/2/3): " choice
+    
+    if [ "$choice" = "1" ]; then
+        IS_UPDATE=true
+        info "Updating NovaShell..."
+        echo ""
+        
+        if [ -f "$DATA_DIR/config.json" ] || [ -f "$DATA_DIR/history.db" ] || [ -d "$DATA_DIR/logs" ] || [ -d "$DATA_DIR/sessions" ] || [ -f "$DATA_DIR/bookmarks.json" ] || [ -f "$DATA_DIR/aliases.json" ] || [ -f "$DATA_DIR/todos.json" ]; then
+            warn "Found user data (config, history, sessions, etc.)"
+            read -p "Do you want to remove user data? (y/N): " remove_data_choice
+            if [ "$remove_data_choice" = "y" ] || [ "$remove_data_choice" = "Y" ]; then
+                REMOVE_DATA=true
+            fi
+        fi
+    elif [ "$choice" = "2" ]; then
+        warn "This will remove all NovaShell files including your config, history, and data."
+        read -p "Are you sure? (y/N): " confirm
+        if [ "$confirm" = "y" ] || [ "$confirm" = "Y" ]; then
+            rm -rf "$INSTALL_DIR"
+            info "Removed existing installation"
+            IS_UPDATE=false
+        else
+            error "Installation cancelled"
+        fi
     else
         error "Installation cancelled"
     fi
 fi
 
-info "Cloning repository..."
-if ! git clone "$REPO_URL" "$INSTALL_DIR"; then
-    error "Failed to clone repository. Please check your internet connection and repository URL."
+if [ "$IS_UPDATE" = true ]; then
+    cd "$INSTALL_DIR"
+    
+    info "Pulling latest changes..."
+    if ! git pull; then
+        warn "Git pull failed. Attempting to reset and pull..."
+        git fetch origin
+        git reset --hard origin/main
+        if [ $? -ne 0 ]; then
+            error "Failed to update repository"
+        fi
+    fi
+    
+    info "✓ Code updated"
+    echo ""
+    
+    if [ "$REMOVE_DATA" = true ]; then
+        info "Removing user data..."
+        [ -f "$DATA_DIR/config.json" ] && rm -f "$DATA_DIR/config.json"
+        [ -f "$DATA_DIR/history.db" ] && rm -f "$DATA_DIR/history.db"
+        [ -d "$DATA_DIR/logs" ] && rm -rf "$DATA_DIR/logs"
+        [ -d "$DATA_DIR/sessions" ] && rm -rf "$DATA_DIR/sessions"
+        [ -f "$DATA_DIR/bookmarks.json" ] && rm -f "$DATA_DIR/bookmarks.json"
+        [ -f "$DATA_DIR/aliases.json" ] && rm -f "$DATA_DIR/aliases.json"
+        [ -f "$DATA_DIR/todos.json" ] && rm -f "$DATA_DIR/todos.json"
+        info "✓ User data removed"
+        echo ""
+    fi
+else
+    info "Cloning repository..."
+    if ! git clone "$REPO_URL" "$INSTALL_DIR"; then
+        error "Failed to clone repository. Please check your internet connection and repository URL."
+    fi
+    
+    info "✓ Repository cloned"
+    echo ""
+    
+    cd "$INSTALL_DIR"
 fi
-
-info "✓ Repository cloned"
-echo ""
-
-cd "$INSTALL_DIR"
 
 info "Installing dependencies..."
 if ! npm install; then
@@ -105,6 +163,7 @@ fi
 info "✓ NovaShell linked globally"
 echo ""
 
+BIN_DIR="$HOME/.local/bin"
 if [ -d "$BIN_DIR" ] && [[ ":$PATH:" != *":$BIN_DIR:"* ]]; then
     warn "Note: $BIN_DIR is not in your PATH."
     warn "Add this line to your ~/.bashrc or ~/.zshrc:"

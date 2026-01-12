@@ -68,6 +68,13 @@ export async function help(args) {
     'where [--top|--today]': 'Show directory history',
     'suggest': 'Get command suggestions based on context',
     'next': 'What to do next (based on patterns)',
+    'bookmark [list|add|remove|go]': 'Manage directory bookmarks',
+    'cp/copy <source> <dest>': 'Copy files',
+    'mv/move <source> <dest>': 'Move files',
+    'find [dir] <pattern>': 'Search for files',
+    'grep <pattern> <file>': 'Search in files',
+    'theme [list|set|current]': 'Manage prompt themes',
+    'config [show|alias|custom]': 'Manage configuration (aliases, custom commands)',
     '<command>': 'Execute system commands (e.g., git, npm, etc.)'
   };
 

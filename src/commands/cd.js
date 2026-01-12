@@ -1,13 +1,19 @@
 import { chdir } from 'process';
 import { existsSync } from 'fs';
 import chalk from 'chalk';
+import { getBookmark } from '../utils/bookmarks.js';
 
 export async function cd(args) {
-  const targetDir = args[0] || process.env.HOME || process.env.USERPROFILE;
+  let targetDir = args[0] || process.env.HOME || process.env.USERPROFILE;
   
   if (!targetDir) {
     console.error(chalk.red('cd: HOME directory not set'));
     return;
+  }
+
+  const bookmark = await getBookmark(targetDir);
+  if (bookmark) {
+    targetDir = bookmark;
   }
 
   if (!existsSync(targetDir)) {
