@@ -801,7 +801,7 @@ update --no-prompt
 ---
 
 ### `nano` / `edit`
-Simple text editor (nano-like) for editing files.
+Open file in system editor.
 
 **Usage:**
 ```bash
@@ -817,13 +817,14 @@ edit config.json
 ```
 
 **Features:**
-- Edit existing files or create new ones
-- Line-by-line editing interface
-- Simple and intuitive
+- Opens file in system editor (uses `EDITOR` or `VISUAL` environment variable)
+- On Windows: uses `notepad` by default
+- On Linux/macOS: uses `nano` by default
+- Creates file if it doesn't exist
 
 **Aliases:** `edit`
 
-**Note:** This is a simple editor suitable for quick edits. For complex editing, use your system's default editor.
+**Note:** The editor is determined by `EDITOR` or `VISUAL` environment variable. Set it to your preferred editor (e.g., `export EDITOR=vim` or `export EDITOR=code`).
 
 ---
 

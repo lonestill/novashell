@@ -340,7 +340,7 @@ export const commandMetadata = {
     ]
   },
   'nano': {
-    description: 'Simple text editor (nano-like)',
+    description: 'Open file in system editor (uses EDITOR env variable, or notepad/nano by default)',
     usage: 'nano <file>',
     examples: ['nano file.txt', 'nano /path/to/file.txt'],
     aliases: ['edit'],

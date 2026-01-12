@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { resolve } from 'path';
-import { cwd } from 'process';
-import readline from 'readline';
+import { cwd, platform, env } from 'process';
+import { spawn } from 'child_process';
 import chalk from 'chalk';
 
 export async function nanoCommand(args) {
@@ -14,61 +14,38 @@ export async function nanoCommand(args) {
   const filePath = resolve(cwd(), args[0]);
   const fileExists = existsSync(filePath);
   
-  let content = '';
-  if (fileExists) {
+  if (!fileExists) {
     try {
-      content = readFileSync(filePath, 'utf-8');
+      writeFileSync(filePath, '', 'utf-8');
     } catch (error) {
-      console.error(chalk.red(`nano: cannot open file: ${error.message}`));
+      console.error(chalk.red(`nano: cannot create file: ${error.message}`));
       return;
     }
   }
 
-  console.log(chalk.cyan.bold('\n=== NovaShell Editor ===\n'));
-  console.log(chalk.gray(`Editing: ${filePath}`));
-  
-  if (content) {
-    console.log(chalk.gray('Current content:\n'));
-    console.log(chalk.white(content));
-    console.log(chalk.gray('\n--- End of file ---\n'));
-  }
-  
-  console.log(chalk.yellow('Enter new content line by line (empty line to finish):\n'));
+  const isWindows = platform() === 'win32';
+  const editor = env.EDITOR || env.VISUAL || (isWindows ? 'notepad' : 'nano');
 
-  const lines = [];
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-  });
-
-  function askForLine() {
-    rl.question(chalk.gray(`[${lines.length + 1}] `), (input) => {
-      if (input.trim() === '') {
-        if (lines.length > 0) {
-          rl.close();
-          
-          const finalContent = lines.join('\n');
-          
-          try {
-            writeFileSync(filePath, finalContent, 'utf-8');
-            console.log(chalk.green(`\n✓ File saved: ${filePath}\n`));
-          } catch (error) {
-            console.error(chalk.red(`\n✗ Error saving file: ${error.message}\n`));
-          }
-          return;
-        }
-      }
-      
-      lines.push(input);
-      askForLine();
-    });
-  }
+  console.log(chalk.cyan.bold(`\nOpening ${filePath} in ${editor}...\n`));
 
   return new Promise((resolve) => {
-    rl.on('close', () => {
+    const child = spawn(editor, [filePath], {
+      stdio: 'inherit',
+      shell: isWindows
+    });
+
+    child.on('error', (error) => {
+      console.error(chalk.red(`\nnano: Failed to open editor: ${error.message}\n`));
       resolve();
     });
 
-    askForLine();
+    child.on('exit', (code) => {
+      if (code === 0) {
+        console.log(chalk.green(`\n✓ File saved: ${filePath}\n`));
+      } else {
+        console.log(chalk.yellow(`\nEditor exited with code ${code}\n`));
+      }
+      resolve();
+    });
   });
 }
