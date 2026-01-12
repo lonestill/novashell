@@ -1,0 +1,30 @@
+{
+  "name": "novashell",
+  "version": "1.0.0",
+  "description": "A custom cross-platform CLI shell/console",
+  "main": "index.js",
+  "type": "module",
+  "bin": {
+    "novashell": "./index.js"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node index.js"
+  },
+  "keywords": [
+    "cli",
+    "shell",
+    "console",
+    "terminal",
+    "command-line"
+  ],
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "dependencies": {
+    "chalk": "^5.3.0"
+  },
+  "devDependencies": {}
+}
