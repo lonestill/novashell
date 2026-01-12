@@ -338,6 +338,15 @@ export const commandMetadata = {
     arguments: [
       { name: '--no-prompt', description: 'Only check for updates, do not prompt for update', required: false }
     ]
+  },
+  'nano': {
+    description: 'Simple text editor (nano-like)',
+    usage: 'nano <file>',
+    examples: ['nano file.txt', 'nano /path/to/file.txt'],
+    aliases: ['edit'],
+    arguments: [
+      { name: 'file', description: 'File to edit', required: true }
+    ]
   }
 };
 

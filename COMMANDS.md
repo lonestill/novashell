@@ -800,6 +800,33 @@ update --no-prompt
 
 ---
 
+### `nano` / `edit`
+Simple text editor (nano-like) for editing files.
+
+**Usage:**
+```bash
+nano <file>
+edit <file>
+```
+
+**Examples:**
+```bash
+nano file.txt
+nano /path/to/file.txt
+edit config.json
+```
+
+**Features:**
+- Edit existing files or create new ones
+- Line-by-line editing interface
+- Simple and intuitive
+
+**Aliases:** `edit`
+
+**Note:** This is a simple editor suitable for quick edits. For complex editing, use your system's default editor.
+
+---
+
 ## System Commands
 
 NovaShell can execute any system command (like `git`, `npm`, `docker`, etc.).

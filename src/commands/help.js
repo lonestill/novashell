@@ -52,6 +52,7 @@ export async function help(args) {
     'pwd': 'Print the current working directory',
     'ls/dir': 'List files and directories',
     'cat/type <file>': 'Display file contents',
+    'nano/edit <file>': 'Edit file with simple editor',
     'history [options]': 'Show command history with filters',
     'env': 'Display environment variables',
     'sysinfo/sys/systeminfo': 'Display system information',
