@@ -3,13 +3,19 @@ import { join, dirname, resolve } from 'path';
 import { cwd } from 'process';
 import { getCommandDescription } from './commandMetadata.js';
 
-const FILE_COMMANDS = ['cat', 'type', 'touch', 'trash', 'recycle', 'rm'];
+const FILE_COMMANDS = ['cat', 'type', 'touch', 'trash', 'recycle', 'rm', 'cp', 'copy', 'mv', 'move', 'grep', 'find', 'ls', 'dir'];
 const DIR_COMMANDS = ['cd'];
 
 const COMMAND_ARGUMENTS = {
   json: ['format', 'validate', 'minify', 'beautify', 'pretty', 'get'],
   random: ['string', 'number', 'uuid', 'hex', 'bytes'],
-  history: ['--failed', '--success', '--today', '--dir', '--branch', '--limit', '-f', '-s', '-t']
+  history: ['--failed', '--success', '--today', '--dir', '--branch', '--limit', '-f', '-s', '-t'],
+  session: ['save', 'load', 'list', 'delete'],
+  alias: ['add', 'remove', 'suggest', 'list'],
+  todo: ['add', 'done', 'remove', 'list'],
+  bookmark: ['add', 'remove', 'list', 'go'],
+  theme: ['list', 'set', 'current'],
+  config: ['show', 'alias', 'custom', 'remove', 'edit', 'template']
 };
 
 export function createCompleter(commandManager) {

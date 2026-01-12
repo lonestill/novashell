@@ -9,7 +9,9 @@
   },
   "scripts": {
     "start": "node index.js",
-    "dev": "node index.js"
+    "dev": "node index.js",
+    "test": "node test/run-all.js",
+    "test:watch": "node test/run-all.js --watch"
   },
   "keywords": [
     "cli",

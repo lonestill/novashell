@@ -593,6 +593,37 @@ quit
 
 ---
 
+### `theme`
+Manage prompt themes for customizing the shell appearance.
+
+**Usage:**
+```bash
+theme list          # List all available themes
+theme set <name>    # Set the active theme
+theme current       # Show the current theme
+```
+
+**Examples:**
+```bash
+theme list
+theme set dark
+theme set colorful
+theme current
+```
+
+**Available Themes:**
+- `default`: Standard theme with balanced colors
+- `dark`: Dark theme with light text on dark background
+- `minimal`: Minimal theme with subtle colors
+- `colorful`: Colorful theme with vibrant colors
+
+**Features:**
+- Theme changes apply immediately to the next prompt
+- Themes persist across shell sessions
+- Customize prompt colors, shell name, path, and git information display
+
+---
+
 ### `config`
 Manage NovaShell configuration (command aliases, custom commands, settings).
 

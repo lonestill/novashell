@@ -30,6 +30,8 @@ import { grepCommand } from './commands/grep.js';
 import { themeCommand } from './commands/theme.js';
 import { configCommand } from './commands/config.js';
 import { getCustomCommandsSync, getCommandAliasesSync } from './utils/config.js';
+import { listJSCommands, loadJSCommand } from './utils/customCommands.js';
+import chalk from 'chalk';
 
 export class CommandManager {
   constructor() {
@@ -84,6 +86,24 @@ export class CommandManager {
     
     this.loadCustomCommands();
     this.loadCommandAliases();
+  }
+  
+  async loadJSCommands() {
+    try {
+      const jsCommandNames = await listJSCommands();
+      for (const name of jsCommandNames) {
+        try {
+          const commandFunc = await loadJSCommand(name);
+          if (commandFunc && typeof commandFunc === 'function') {
+            this.register(name, commandFunc);
+          }
+        } catch (error) {
+          console.error(chalk.red(`Warning: Failed to load JS command "${name}": ${error.message}`));
+        }
+      }
+    } catch (error) {
+      // Ignore errors during initial load
+    }
   }
   
   loadCustomCommands() {
