@@ -8,7 +8,7 @@ const DIR_COMMANDS = ['cd'];
 
 const COMMAND_ARGUMENTS = {
   json: ['format', 'validate', 'minify', 'beautify', 'pretty', 'get'],
-  random: ['string', 'number', 'uuid', 'hex', 'bytes'],
+  random: ['string', 'number', 'uuid', 'hex', 'bytes', 'commit'],
   history: ['--failed', '--success', '--today', '--dir', '--branch', '--limit', '-f', '-s', '-t'],
   session: ['save', 'load', 'list', 'delete'],
   alias: ['add', 'remove', 'suggest', 'list'],

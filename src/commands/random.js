@@ -45,7 +45,7 @@ export async function random(args) {
       console.log(randomInt(0, num + 1));
     } else {
       console.error(chalk.red(`random: unknown type "${type}"`));
-      console.log(chalk.gray('Usage: random [string|number|uuid|hex|bytes] [length|min] [max]'));
+      console.log(chalk.gray('Usage: random [string|number|uuid|hex|bytes|commit] [length|min] [max]'));
     }
   }
 }

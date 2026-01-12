@@ -701,7 +701,7 @@ echo $HOME
 ---
 
 ### `random`
-Generate random values (string, number, UUID, hex, bytes).
+Generate random values (string, number, UUID, hex, bytes, commit).
 
 **Usage:**
 ```bash
@@ -714,6 +714,7 @@ random [type] [length]
 - `uuid`: Generate UUID v4
 - `hex`: Random hexadecimal string
 - `bytes`: Random bytes in hex format
+- `commit`: Generate random commit message
 
 **Examples:**
 ```bash
@@ -723,6 +724,7 @@ random number 1000        # Random number 0-1000
 random uuid               # Generate UUID
 random hex 32             # 32-character hex string
 random bytes 16           # 16 random bytes
+random commit             # Random commit message
 ```
 
 ---

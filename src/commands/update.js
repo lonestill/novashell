@@ -59,27 +59,84 @@ function getLatestVersionFromGit() {
         stdio: ['ignore', 'pipe', 'ignore']
       }).trim();
       
-      if (!tags) {
-        return null;
+      if (tags) {
+        const tagList = tags.split('\n').filter(t => t.trim());
+        if (tagList.length > 0) {
+          const latestTag = execSync('git describe --tags --abbrev=0', {
+            cwd: installDir,
+            encoding: 'utf-8',
+            stdio: ['ignore', 'pipe', 'ignore']
+          }).trim();
+          
+          return latestTag;
+        }
       }
+    } catch (error) {
+    }
+    
+    return null;
+  } catch (error) {
+    return null;
+  }
+}
+
+function checkForUpdatesViaGitPull() {
+  try {
+    const installDir = getInstallDir();
+    
+    if (!existsSync(installDir)) {
+      return { hasUpdates: false, canCheck: false };
+    }
+    
+    const gitDir = join(installDir, '.git');
+    if (!existsSync(gitDir)) {
+      return { hasUpdates: false, canCheck: false };
+    }
+    
+    try {
+      execSync('git fetch', {
+        cwd: installDir,
+        stdio: ['ignore', 'ignore', 'ignore'],
+        timeout: 10000
+      });
       
-      const tagList = tags.split('\n').filter(t => t.trim());
-      if (tagList.length === 0) {
-        return null;
-      }
-      
-      const latestTag = execSync('git describe --tags --abbrev=0', {
+      const currentCommit = execSync('git rev-parse HEAD', {
         cwd: installDir,
         encoding: 'utf-8',
         stdio: ['ignore', 'pipe', 'ignore']
       }).trim();
       
-      return latestTag;
+      let remoteBranch = 'origin/main';
+      try {
+        const branch = execSync('git branch --show-current', {
+          cwd: installDir,
+          encoding: 'utf-8',
+          stdio: ['ignore', 'pipe', 'ignore']
+        }).trim();
+        remoteBranch = `origin/${branch}`;
+      } catch (error) {
+      }
+      
+      try {
+        const remoteCommit = execSync(`git rev-parse ${remoteBranch}`, {
+          cwd: installDir,
+          encoding: 'utf-8',
+          stdio: ['ignore', 'pipe', 'ignore']
+        }).trim();
+        
+        if (currentCommit !== remoteCommit) {
+          return { hasUpdates: true, canCheck: true, currentCommit, remoteCommit };
+        }
+        
+        return { hasUpdates: false, canCheck: true };
+      } catch (error) {
+        return { hasUpdates: false, canCheck: true };
+      }
     } catch (error) {
-      return null;
+      return { hasUpdates: false, canCheck: false };
     }
   } catch (error) {
-    return null;
+    return { hasUpdates: false, canCheck: false };
   }
 }
 
@@ -124,9 +181,58 @@ export async function updateCommand(args) {
   try {
     const latestVersion = getLatestVersionFromGit();
     
-    if (!latestVersion) {
-      console.log(chalk.yellow('\n⚠ No tags found in repository.'));
-      console.log(chalk.gray('Updates can only be checked when git tags are available.'));
+    if (latestVersion) {
+      console.log(chalk.gray(`Latest version:  ${chalk.yellow(latestVersion)}`));
+      
+      if (currentVersion === latestVersion || compareVersions(currentVersion, latestVersion) >= 0) {
+        console.log(chalk.green('\n✓ You are running the latest version!'));
+        console.log('');
+        return;
+      }
+      
+      console.log(chalk.yellow(`\n⚠ Update available: ${latestVersion}`));
+      console.log(chalk.gray(`\nTo update, run:`));
+      console.log(chalk.cyan(`  git pull`));
+      console.log(chalk.cyan(`  npm install`));
+      console.log(chalk.gray(`\nOr if you want to update to the latest tag:`));
+      console.log(chalk.cyan(`  git checkout ${latestVersion}`));
+      console.log(chalk.cyan(`  npm install`));
+      console.log('');
+      
+      if (!args.includes('--no-prompt')) {
+        const answer = await askUser(chalk.yellow('\nDo you want to update now? (y/n): '));
+        
+        if (answer === 'y' || answer === 'yes') {
+          console.log(chalk.cyan('\nUpdating...\n'));
+          
+          const installDir = getInstallDir();
+          
+          try {
+            execSync('git pull', {
+              cwd: installDir,
+              stdio: 'inherit'
+            });
+            
+            console.log(chalk.green('\n✓ Update completed!'));
+            console.log(chalk.gray('Run "npm install" to update dependencies if needed.'));
+            console.log('');
+          } catch (error) {
+            console.error(chalk.red('\n✗ Update failed. Please update manually.'));
+            console.log('');
+          }
+        } else {
+          console.log(chalk.gray('\nUpdate cancelled.'));
+          console.log('');
+        }
+      }
+      return;
+    }
+    
+    const updateCheck = checkForUpdatesViaGitPull();
+    
+    if (!updateCheck.canCheck) {
+      console.log(chalk.yellow('\n⚠ Unable to check for updates.'));
+      console.log(chalk.gray('Make sure you are in a git repository.'));
       console.log(chalk.gray('To update manually, run:'));
       const installDir = getInstallDir();
       console.log(chalk.cyan(`  cd ${installDir}`));
@@ -136,48 +242,42 @@ export async function updateCommand(args) {
       return;
     }
     
-    console.log(chalk.gray(`Latest version:  ${chalk.yellow(latestVersion)}`));
-    
-    if (currentVersion === latestVersion || compareVersions(currentVersion, latestVersion) >= 0) {
-      console.log(chalk.green('\n✓ You are running the latest version!'));
+    if (updateCheck.hasUpdates) {
+      console.log(chalk.yellow('\n⚠ Updates available in remote repository.'));
+      console.log(chalk.gray('To update, run:'));
+      const installDir = getInstallDir();
+      console.log(chalk.cyan(`  cd ${installDir}`));
+      console.log(chalk.cyan('  git pull'));
+      console.log(chalk.cyan('  npm install'));
       console.log('');
-      return;
-    }
-    
-    console.log(chalk.yellow(`\n⚠ Update available: ${latestVersion}`));
-    console.log(chalk.gray(`\nTo update, run:`));
-    console.log(chalk.cyan(`  git pull`));
-    console.log(chalk.cyan(`  npm install`));
-    console.log(chalk.gray(`\nOr if you want to update to the latest tag:`));
-    console.log(chalk.cyan(`  git checkout ${latestVersion}`));
-    console.log(chalk.cyan(`  npm install`));
-    console.log('');
-    
-    if (!args.includes('--no-prompt')) {
-      const answer = await askUser(chalk.yellow('\nDo you want to update now? (y/n): '));
       
-      if (answer === 'y' || answer === 'yes') {
-        console.log(chalk.cyan('\nUpdating...\n'));
+      if (!args.includes('--no-prompt')) {
+        const answer = await askUser(chalk.yellow('\nDo you want to update now? (y/n): '));
         
-        const installDir = getInstallDir();
-        
-        try {
-          execSync('git pull', {
-            cwd: installDir,
-            stdio: 'inherit'
-          });
+        if (answer === 'y' || answer === 'yes') {
+          console.log(chalk.cyan('\nUpdating...\n'));
           
-          console.log(chalk.green('\n✓ Update completed!'));
-          console.log(chalk.gray('Run "npm install" to update dependencies if needed.'));
-          console.log('');
-        } catch (error) {
-          console.error(chalk.red('\n✗ Update failed. Please update manually.'));
+          try {
+            execSync('git pull', {
+              cwd: installDir,
+              stdio: 'inherit'
+            });
+            
+            console.log(chalk.green('\n✓ Update completed!'));
+            console.log(chalk.gray('Run "npm install" to update dependencies if needed.'));
+            console.log('');
+          } catch (error) {
+            console.error(chalk.red('\n✗ Update failed. Please update manually.'));
+            console.log('');
+          }
+        } else {
+          console.log(chalk.gray('\nUpdate cancelled.'));
           console.log('');
         }
-      } else {
-        console.log(chalk.gray('\nUpdate cancelled.'));
-        console.log('');
       }
+    } else {
+      console.log(chalk.green('\n✓ You are up to date with the remote repository!'));
+      console.log('');
     }
   } catch (error) {
     console.error(chalk.red(`\nError checking for updates: ${error.message}`));

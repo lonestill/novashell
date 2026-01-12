@@ -105,7 +105,7 @@ export const commandMetadata = {
     ]
   },
   'random': {
-    description: 'Generate random values (string, number, UUID, hex, bytes)',
+    description: 'Generate random values (string, number, UUID, hex, bytes, commit)',
     usage: 'random [type] [length]',
     examples: [
       'random',
@@ -113,10 +113,11 @@ export const commandMetadata = {
       'random number 1000',
       'random uuid',
       'random hex 32',
-      'random bytes 16'
+      'random bytes 16',
+      'random commit message'
     ],
     arguments: [
-      { name: 'type', description: 'Type: string, number, uuid, hex, bytes (default: string)', required: false },
+      { name: 'type', description: 'Type: string, number, uuid, hex, bytes, commit (default: string)', required: false },
       { name: 'length', description: 'Length/size of random value (default: 16)', required: false }
     ]
   },
