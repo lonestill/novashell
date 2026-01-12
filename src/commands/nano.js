@@ -26,13 +26,14 @@ export async function nanoCommand(args) {
 
   console.log(chalk.cyan.bold('\n=== NovaShell Editor ===\n'));
   console.log(chalk.gray(`Editing: ${filePath}`));
-  console.log(chalk.gray('Type your content. Press Enter on empty line to finish.\n'));
   
   if (content) {
     console.log(chalk.gray('Current content:\n'));
     console.log(chalk.white(content));
     console.log(chalk.gray('\n--- End of file ---\n'));
   }
+  
+  console.log(chalk.yellow('Enter new content line by line (empty line to finish):\n'));
 
   const rl = readline.createInterface({
     input: process.stdin,
@@ -40,57 +41,39 @@ export async function nanoCommand(args) {
   });
 
   const lines = [];
-  let currentLine = '';
 
-  if (content) {
-    const existingLines = content.split('\n');
-    for (const line of existingLines) {
-      lines.push(line);
-    }
-  }
-
-  function promptLine() {
-    if (lines.length > 0) {
+  return new Promise((resolve) => {
+    function promptLine() {
       rl.setPrompt(chalk.gray(`[${lines.length + 1}] `));
-    } else {
-      rl.setPrompt(chalk.gray('[1] '));
+      rl.prompt();
     }
-    rl.prompt();
-  }
 
-  rl.on('line', (input) => {
-    if (input.trim() === '' && lines.length > 0 && currentLine === '') {
-      rl.close();
-      return;
-    }
-    
-    lines.push(input);
-    currentLine = input;
-    
-    if (input.trim() === '' && lines.length > 0) {
-      rl.close();
-      return;
-    }
-    
+    rl.on('line', (input) => {
+      if (input.trim() === '') {
+        if (lines.length > 0) {
+          rl.close();
+          return;
+        }
+      } else {
+        lines.push(input);
+        if (!rl.closed) {
+          promptLine();
+        }
+      }
+    });
+
+    rl.on('close', () => {
+      const finalContent = lines.join('\n');
+      
+      try {
+        writeFileSync(filePath, finalContent, 'utf-8');
+        console.log(chalk.green(`\n✓ File saved: ${filePath}\n`));
+      } catch (error) {
+        console.error(chalk.red(`\n✗ Error saving file: ${error.message}\n`));
+      }
+      resolve();
+    });
+
     promptLine();
   });
-
-  rl.on('close', () => {
-    const finalContent = lines.join('\n');
-    
-    try {
-      writeFileSync(filePath, finalContent, 'utf-8');
-      console.log(chalk.green(`\n✓ File saved: ${filePath}\n`));
-    } catch (error) {
-      console.error(chalk.red(`\n✗ Error saving file: ${error.message}\n`));
-    }
-  });
-
-  if (content) {
-    console.log(chalk.yellow('Press Enter to start editing, or type new content line by line.\n'));
-    promptLine();
-  } else {
-    console.log(chalk.yellow('Enter file content (empty line to save and exit):\n'));
-    promptLine();
-  }
 }
