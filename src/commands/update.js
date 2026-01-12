@@ -1,8 +1,10 @@
 import chalk from 'chalk';
 import { getVersion } from '../utils/version.js';
-import { execSync, spawn } from 'child_process';
+import { execSync } from 'child_process';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { homedir } from 'os';
+import { existsSync } from 'fs';
 import readline from 'readline';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -12,16 +14,37 @@ function getCurrentVersion() {
   return getVersion();
 }
 
+function getInstallDir() {
+  const packageDir = join(__dirname, '..', '..');
+  const homeDir = homedir();
+  const defaultInstallDir = join(homeDir, '.novashell');
+  
+  if (existsSync(defaultInstallDir)) {
+    return defaultInstallDir;
+  }
+  
+  if (existsSync(join(packageDir, '.git'))) {
+    return packageDir;
+  }
+  
+  return defaultInstallDir;
+}
+
 function getLatestVersionFromGit() {
   try {
-    const rootDir = join(__dirname, '..', '..');
+    const installDir = getInstallDir();
+    
+    if (!existsSync(installDir) || !existsSync(join(installDir, '.git'))) {
+      return null;
+    }
+    
     execSync('git fetch --tags', {
-      cwd: rootDir,
+      cwd: installDir,
       stdio: ['ignore', 'ignore', 'ignore']
     });
     
     const latestTag = execSync('git describe --tags --abbrev=0', {
-      cwd: rootDir,
+      cwd: installDir,
       encoding: 'utf-8',
       stdio: ['ignore', 'pipe', 'ignore']
     }).trim();
@@ -102,11 +125,11 @@ export async function updateCommand(args) {
       if (answer === 'y' || answer === 'yes') {
         console.log(chalk.cyan('\nUpdating...\n'));
         
-        const rootDir = join(__dirname, '..', '..');
+        const installDir = getInstallDir();
         
         try {
           execSync('git pull', {
-            cwd: rootDir,
+            cwd: installDir,
             stdio: 'inherit'
           });
           
