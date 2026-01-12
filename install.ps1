@@ -109,11 +109,33 @@ try {
 Write-Info "✓ NovaShell linked globally"
 Write-Host ""
 
+$npmBinPath = "$env:APPDATA\npm"
+$userPath = [Environment]::GetEnvironmentVariable('Path', 'User')
+$pathContainsNpm = $userPath -split ';' | Where-Object { $_ -eq $npmBinPath }
+
+if (-not $pathContainsNpm) {
+    Write-Warn "npm bin directory is not in your PATH. Adding it now..."
+    try {
+        $newPath = if ($userPath) { "$userPath;$npmBinPath" } else { $npmBinPath }
+        [Environment]::SetEnvironmentVariable('Path', $newPath, 'User')
+        $env:Path += ";$npmBinPath"
+        Write-Info "✓ Added npm bin directory to PATH"
+        Write-Warn "Note: Please restart PowerShell for the change to take effect in all new windows."
+    } catch {
+        Write-Warn "Could not add npm to PATH automatically. Please add it manually:"
+        Write-Info "[Environment]::SetEnvironmentVariable('Path', `$env:Path + ';$env:APPDATA\npm', 'User')"
+    }
+    Write-Host ""
+}
+
 Write-Info "Installation complete!"
 Write-Info "======================"
 Write-Host ""
 Write-Info "You can now run NovaShell with:"
 Write-Info "  novashell"
+Write-Info ""
+Write-Info "If the command is not found, restart your terminal or run:"
+Write-Info "  `$env:Path += ';$env:APPDATA\npm'; novashell"
 Write-Host ""
 Write-Info "To update, run this installer again."
 Write-Info "To uninstall, run: npm unlink -g novashell; Remove-Item -Recurse -Force $INSTALL_DIR"
