@@ -34,22 +34,50 @@ function getLatestVersionFromGit() {
   try {
     const installDir = getInstallDir();
     
-    if (!existsSync(installDir) || !existsSync(join(installDir, '.git'))) {
+    if (!existsSync(installDir)) {
       return null;
     }
     
-    execSync('git fetch --tags', {
-      cwd: installDir,
-      stdio: ['ignore', 'ignore', 'ignore']
-    });
+    const gitDir = join(installDir, '.git');
+    if (!existsSync(gitDir)) {
+      return null;
+    }
     
-    const latestTag = execSync('git describe --tags --abbrev=0', {
-      cwd: installDir,
-      encoding: 'utf-8',
-      stdio: ['ignore', 'pipe', 'ignore']
-    }).trim();
+    try {
+      execSync('git fetch --tags', {
+        cwd: installDir,
+        stdio: ['ignore', 'ignore', 'ignore'],
+        timeout: 10000
+      });
+    } catch (fetchError) {
+    }
     
-    return latestTag;
+    try {
+      const tags = execSync('git tag', {
+        cwd: installDir,
+        encoding: 'utf-8',
+        stdio: ['ignore', 'pipe', 'ignore']
+      }).trim();
+      
+      if (!tags) {
+        return null;
+      }
+      
+      const tagList = tags.split('\n').filter(t => t.trim());
+      if (tagList.length === 0) {
+        return null;
+      }
+      
+      const latestTag = execSync('git describe --tags --abbrev=0', {
+        cwd: installDir,
+        encoding: 'utf-8',
+        stdio: ['ignore', 'pipe', 'ignore']
+      }).trim();
+      
+      return latestTag;
+    } catch (error) {
+      return null;
+    }
   } catch (error) {
     return null;
   }
@@ -97,7 +125,13 @@ export async function updateCommand(args) {
     const latestVersion = getLatestVersionFromGit();
     
     if (!latestVersion) {
-      console.log(chalk.red('\nUnable to check for updates. Make sure you are in a git repository.'));
+      console.log(chalk.yellow('\n⚠ No tags found in repository.'));
+      console.log(chalk.gray('Updates can only be checked when git tags are available.'));
+      console.log(chalk.gray('To update manually, run:'));
+      const installDir = getInstallDir();
+      console.log(chalk.cyan(`  cd ${installDir}`));
+      console.log(chalk.cyan('  git pull'));
+      console.log(chalk.cyan('  npm install'));
       console.log('');
       return;
     }
