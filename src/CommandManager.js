@@ -29,6 +29,8 @@ import { findCommand } from './commands/find.js';
 import { grepCommand } from './commands/grep.js';
 import { themeCommand } from './commands/theme.js';
 import { configCommand } from './commands/config.js';
+import { versionCommand } from './commands/version.js';
+import { updateCommand } from './commands/update.js';
 import { getCustomCommandsSync, getCommandAliasesSync } from './utils/config.js';
 import { listJSCommands, loadJSCommand } from './utils/customCommands.js';
 import chalk from 'chalk';

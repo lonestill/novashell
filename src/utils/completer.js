@@ -15,7 +15,8 @@ const COMMAND_ARGUMENTS = {
   todo: ['add', 'done', 'remove', 'list'],
   bookmark: ['add', 'remove', 'list', 'go'],
   theme: ['list', 'set', 'current'],
-  config: ['show', 'alias', 'custom', 'remove', 'edit', 'template']
+  config: ['show', 'alias', 'custom', 'remove', 'edit', 'template'],
+  update: ['--no-prompt']
 };
 
 export function createCompleter(commandManager) {

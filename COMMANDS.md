@@ -752,6 +752,52 @@ json get config.json database.host
 
 ---
 
+### `version`
+Display NovaShell version information.
+
+**Usage:**
+```bash
+version
+```
+
+**Examples:**
+```bash
+version
+```
+
+**Output:**
+- Shows current version (from git tags or package.json)
+- Displays package name and description
+
+---
+
+### `update`
+Check for updates and optionally update NovaShell.
+
+**Usage:**
+```bash
+update [--no-prompt]
+```
+
+**Options:**
+- `--no-prompt`: Only check for updates, do not prompt for update
+
+**Examples:**
+```bash
+update
+update --no-prompt
+```
+
+**Features:**
+- Checks for latest version using git tags
+- Compares current version with latest available
+- Prompts user to update if newer version is available
+- Can update automatically if user confirms
+
+**Note:** Requires git repository and network connection to fetch tags from remote.
+
+---
+
 ## System Commands
 
 NovaShell can execute any system command (like `git`, `npm`, `docker`, etc.).

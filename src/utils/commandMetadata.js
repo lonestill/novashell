@@ -321,6 +321,22 @@ export const commandMetadata = {
       { name: 'name', description: 'Command/alias name', required: false },
       { name: 'command', description: 'Command to alias/execute', required: false }
     ]
+  },
+  'version': {
+    description: 'Display NovaShell version information',
+    usage: 'version',
+    examples: ['version'],
+    aliases: [],
+    arguments: []
+  },
+  'update': {
+    description: 'Check for updates and optionally update NovaShell',
+    usage: 'update [--no-prompt]',
+    examples: ['update', 'update --no-prompt'],
+    aliases: [],
+    arguments: [
+      { name: '--no-prompt', description: 'Only check for updates, do not prompt for update', required: false }
+    ]
   }
 };
 
