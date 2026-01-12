@@ -85,6 +85,8 @@ export class CommandManager {
     this.register('grep', grepCommand);
     this.register('theme', themeCommand);
     this.register('config', configCommand);
+    this.register('version', versionCommand);
+    this.register('update', updateCommand);
     
     this.loadCustomCommands();
     this.loadCommandAliases();
