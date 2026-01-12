@@ -35,45 +35,40 @@ export async function nanoCommand(args) {
   
   console.log(chalk.yellow('Enter new content line by line (empty line to finish):\n'));
 
+  const lines = [];
   const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
   });
 
-  const lines = [];
-
-  return new Promise((resolve) => {
-    function promptLine() {
-      rl.setPrompt(chalk.gray(`[${lines.length + 1}] `));
-      rl.prompt();
-    }
-
-    rl.on('line', (input) => {
+  function askForLine() {
+    rl.question(chalk.gray(`[${lines.length + 1}] `), (input) => {
       if (input.trim() === '') {
         if (lines.length > 0) {
           rl.close();
+          
+          const finalContent = lines.join('\n');
+          
+          try {
+            writeFileSync(filePath, finalContent, 'utf-8');
+            console.log(chalk.green(`\n✓ File saved: ${filePath}\n`));
+          } catch (error) {
+            console.error(chalk.red(`\n✗ Error saving file: ${error.message}\n`));
+          }
           return;
         }
-      } else {
-        lines.push(input);
-        if (!rl.closed) {
-          promptLine();
-        }
       }
-    });
-
-    rl.on('close', () => {
-      const finalContent = lines.join('\n');
       
-      try {
-        writeFileSync(filePath, finalContent, 'utf-8');
-        console.log(chalk.green(`\n✓ File saved: ${filePath}\n`));
-      } catch (error) {
-        console.error(chalk.red(`\n✗ Error saving file: ${error.message}\n`));
-      }
+      lines.push(input);
+      askForLine();
+    });
+  }
+
+  return new Promise((resolve) => {
+    rl.on('close', () => {
       resolve();
     });
 
-    promptLine();
+    askForLine();
   });
 }
