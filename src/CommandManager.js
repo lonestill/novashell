@@ -8,6 +8,20 @@ import { ls } from './commands/ls.js';
 import { cat } from './commands/cat.js';
 import { history } from './commands/history.js';
 import { env } from './commands/env.js';
+import { sysinfo } from './commands/sysinfo.js';
+import { touch } from './commands/touch.js';
+import { random } from './commands/random.js';
+import { json } from './commands/json.js';
+import { whoami } from './commands/whoami.js';
+import { trash } from './commands/trash.js';
+import { rmCommand } from './commands/rm.js';
+import { stats } from './commands/stats.js';
+import { sessionCommand } from './commands/session.js';
+import { aliasCommand } from './commands/alias.js';
+import { todoCommand } from './commands/todo.js';
+import { whereCommand } from './commands/where.js';
+import { suggestCommand } from './commands/suggest.js';
+import { nextCommand } from './commands/next.js';
 
 export class CommandManager {
   constructor() {
@@ -30,6 +44,26 @@ export class CommandManager {
     this.register('type', cat);
     this.register('history', history);
     this.register('env', env);
+    this.register('sysinfo', sysinfo);
+    this.register('systeminfo', sysinfo);
+    this.register('sys', sysinfo);
+    this.register('whoami', whoami);
+    this.register('me', whoami);
+    this.register('info', sysinfo);
+    this.register('neofetch', sysinfo);
+    this.register('touch', touch);
+    this.register('random', random);
+    this.register('json', json);
+    this.register('trash', trash);
+    this.register('recycle', trash);
+    this.register('rm', rmCommand);
+    this.register('stats', stats);
+    this.register('session', sessionCommand);
+    this.register('alias', aliasCommand);
+    this.register('todo', todoCommand);
+    this.register('where', whereCommand);
+    this.register('suggest', suggestCommand);
+    this.register('next', nextCommand);
   }
 
   register(name, handler) {

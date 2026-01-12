@@ -58,6 +58,10 @@ npm start
 node index.js
 ```
 
+## Documentation
+
+- **[COMMANDS.md](COMMANDS.md)** - Complete command reference with detailed descriptions and examples
+
 ## Built-in Commands
 
 | Command | Description |
@@ -72,6 +76,7 @@ node index.js
 | `cat` / `type <file>` | Display file contents |
 | `history` | Show command history |
 | `env` | Display environment variables |
+| `sysinfo` / `neofetch` | Display system information |
 | `<any command>` | Execute system commands |
 
 ## Examples
