@@ -1,0 +1,6 @@
+
+{
+  "name": "NovaShell",
+  "description": "A custom cross-platform CLI shell built with Node.js. Interactive, customizable, and beautiful.",
+  "requestFramePermissions": []
+}
