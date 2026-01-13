@@ -1,6 +1,6 @@
-
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, computed } from '@angular/core';
 import { LucideIconComponent } from './lucide-icon.component';
+import { I18nService } from '../services/i18n.service';
 
 @Component({
   selector: 'app-bento-grid',
@@ -10,13 +10,13 @@ import { LucideIconComponent } from './lucide-icon.component';
     <section class="w-full max-w-[1200px] px-6 py-24 border-t border-white/[0.06]">
       <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-6">
         <div>
-          <h2 class="text-3xl md:text-4xl font-semibold text-[#F7F8F8] mb-4 tracking-tight">Power at your fingertips</h2>
-          <p class="text-[#8A8F98] text-lg max-w-md">NovaShell isn't just a terminal. It's a complete workspace with productivity tools built-in.</p>
+          <h2 class="text-3xl md:text-4xl font-semibold text-[#F7F8F8] mb-4 tracking-tight">{{ title() }}</h2>
+          <p class="text-[#8A8F98] text-lg max-w-md">{{ subtitle() }}</p>
         </div>
-        <button class="text-[#F7F8F8] text-sm font-medium hover:text-[#5E6AD2] transition-colors flex items-center gap-1 group">
-          View all features
+        <a href="https://github.com/lonestill/novashell#features" target="_blank" class="text-[#F7F8F8] text-sm font-medium hover:text-[#5E6AD2] transition-colors flex items-center gap-1 group">
+          {{ viewFeatures() }}
           <lucide-icon name="chevronRight" [size]="16" className="w-4 h-4 group-hover:translate-x-1 transition-transform" [strokeWidth]="1.5" />
-        </button>
+        </a>
       </div>
       
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -30,21 +30,18 @@ import { LucideIconComponent } from './lucide-icon.component';
               <div class="w-12 h-12 rounded-full bg-white/[0.05] flex items-center justify-center mb-6 border border-white/[0.05]">
                 <lucide-icon name="globe" [size]="24" className="w-6 h-6 text-[#F7F8F8]" />
               </div>
-              <h3 class="text-2xl font-medium text-[#F7F8F8] mb-3">Cross-Platform Everywhere</h3>
-              <p class="text-[#8A8F98] text-[15px] leading-relaxed max-w-sm">Consistent experience on Windows, macOS, and Linux. Your aliases, history, and config travel with you.</p>
+              <h3 class="text-2xl font-medium text-[#F7F8F8] mb-3">{{ crossPlatform() }}</h3>
+              <p class="text-[#8A8F98] text-[15px] leading-relaxed max-w-sm">{{ crossPlatformDesc() }}</p>
               
               <div class="mt-auto pt-10 relative flex gap-8 justify-center md:justify-start">
                  <!-- OS Icons visual -->
                  <div class="flex flex-col items-center gap-2 group/icon hover:-translate-y-1 transition-transform">
-                    
                     <span class="text-xs text-[#8A8F98] font-mono">Linux</span>
                  </div>
                  <div class="flex flex-col items-center gap-2 group/icon hover:-translate-y-1 transition-transform">
-                    
                     <span class="text-xs text-[#8A8F98] font-mono">Windows</span>
                  </div>
                  <div class="flex flex-col items-center gap-2 group/icon hover:-translate-y-1 transition-transform">
-
                     <span class="text-xs text-[#8A8F98] font-mono">macOS</span>
                  </div>
               </div>
@@ -57,22 +54,22 @@ import { LucideIconComponent } from './lucide-icon.component';
               <div class="w-12 h-12 rounded-full bg-white/[0.05] flex items-center justify-center mb-6 border border-white/[0.05]">
                  <lucide-icon name="checkCircle" [size]="24" className="w-6 h-6 text-[#F7F8F8]" />
               </div>
-              <h3 class="text-xl font-medium text-[#F7F8F8] mb-3">Built-in Productivity</h3>
-              <p class="text-[#8A8F98] text-[15px] leading-relaxed mb-6">Manage tasks, bookmark directories, and track command statistics without leaving your shell.</p>
+              <h3 class="text-xl font-medium text-[#F7F8F8] mb-3">{{ productivity() }}</h3>
+              <p class="text-[#8A8F98] text-[15px] leading-relaxed mb-6">{{ productivityDesc() }}</p>
               
               <!-- Todo List Visual -->
               <div class="flex-1 bg-[#0A0B0E] border border-white/10 rounded-lg p-3 font-mono text-xs">
                  <div class="flex items-center gap-2 mb-2 text-green-400">
                    <div class="w-3 h-3 rounded-full border border-current flex items-center justify-center text-[8px]">✓</div>
-                   <span class="line-through opacity-50">Install dependencies</span>
+                   <span class="line-through opacity-50">{{ todo1() }}</span>
                  </div>
                  <div class="flex items-center gap-2 mb-2 text-white">
                    <div class="w-3 h-3 rounded-full border border-gray-600"></div>
-                   <span>Push to production</span>
+                   <span>{{ todo2() }}</span>
                  </div>
                  <div class="flex items-center gap-2 text-white">
                    <div class="w-3 h-3 rounded-full border border-gray-600"></div>
-                   <span>Update documentation</span>
+                   <span>{{ todo3() }}</span>
                  </div>
               </div>
 
@@ -86,9 +83,9 @@ import { LucideIconComponent } from './lucide-icon.component';
               <div class="w-12 h-12 rounded-full bg-white/[0.05] flex items-center justify-center mb-6 border border-white/[0.05]">
                  <lucide-icon name="settings" [size]="24" className="w-6 h-6 text-[#F7F8F8]" />
               </div>
-              <h3 class="text-xl font-medium text-[#F7F8F8] mb-3">Extensible & Themed</h3>
+              <h3 class="text-xl font-medium text-[#F7F8F8] mb-3">{{ customizable() }}</h3>
               <p class="text-[#8A8F98] text-[15px] leading-relaxed max-w-lg">
-                Create custom commands using JavaScript files or simple strings. Customize your prompt with themes to match your aesthetic.
+                {{ customizableDesc() }}
               </p>
            </div>
            
@@ -96,18 +93,10 @@ import { LucideIconComponent } from './lucide-icon.component';
               <!-- Grid pattern background -->
               <div class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:20px_20px]"></div>
               
-              <div class="relative z-10 w-3/4 bg-[#1E2025] rounded border border-white/10 p-3 shadow-xl transform group-hover:scale-105 transition-transform">
-                 <div class="text-[#C678DD]">module</div>.<span class="text-[#E5C07B]">exports</span> = &#123;
-                 <div class="pl-4">
-                   <span class="text-[#E06C75]">name</span>: <span class="text-[#98C379]">'greet'</span>,
-                 </div>
-                 <div class="pl-4">
-                   <span class="text-[#61AFEF]">execute</span>(<span class="text-[#E06C75]">args</span>) &#123;
-                 </div>
-                 <div class="pl-8 text-[#ABB2BF]">
-                   console.log(<span class="text-[#98C379]">'Hello World!'</span>);
-                 </div>
-                 <div class="pl-4">&#125;</div>
+              <div class="relative z-10 w-3/4 bg-[#1E2025] rounded border border-white/10 p-3 shadow-xl transform group-hover:scale-105 transition-transform" style="white-space: pre;">
+                 <div><span class="text-[#C678DD]">export default async</span> <span class="text-[#61AFEF]">function</span> <span class="text-[#E5C07B]">command</span>(<span class="text-[#E06C75]">args</span>) &#123;</div>
+                 <div class="pl-4 text-[#ABB2BF]">  console.log(<span class="text-[#98C379]">'Hello World!'</span>);</div>
+                 <div class="pl-4 text-[#ABB2BF]">  <span class="text-[#C678DD]">return</span> <span class="text-[#D19A66]">0</span>;</div>
                  <div>&#125;</div>
               </div>
            </div>
@@ -118,4 +107,19 @@ import { LucideIconComponent } from './lucide-icon.component';
   `,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class BentoGridComponent {}
+export class BentoGridComponent {
+  i18n = inject(I18nService);
+  
+  title = computed(() => this.i18n.t('bento.title'));
+  subtitle = computed(() => this.i18n.t('bento.subtitle'));
+  viewFeatures = computed(() => this.i18n.t('bento.viewFeatures'));
+  crossPlatform = computed(() => this.i18n.t('bento.crossPlatform'));
+  crossPlatformDesc = computed(() => this.i18n.t('bento.crossPlatformDesc'));
+  productivity = computed(() => this.i18n.t('bento.productivity'));
+  productivityDesc = computed(() => this.i18n.t('bento.productivityDesc'));
+  customizable = computed(() => this.i18n.t('bento.customizable'));
+  customizableDesc = computed(() => this.i18n.t('bento.customizableDesc'));
+  todo1 = computed(() => this.i18n.t('bento.todo1'));
+  todo2 = computed(() => this.i18n.t('bento.todo2'));
+  todo3 = computed(() => this.i18n.t('bento.todo3'));
+}

@@ -1,6 +1,6 @@
-
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, computed } from '@angular/core';
 import { LucideIconComponent } from './lucide-icon.component';
+import { I18nService } from '../services/i18n.service';
 
 @Component({
   selector: 'app-navbar',
@@ -20,10 +20,10 @@ import { LucideIconComponent } from './lucide-icon.component';
 
         <!-- Links -->
         <div class="hidden md:flex items-center gap-6 text-[14px] text-[#8A8F98]">
-          <a href="#" class="hover:text-[#F7F8F8] transition-colors">Features</a>
-          <a href="#" class="hover:text-[#F7F8F8] transition-colors">Installation</a>
-          <a href="#" class="hover:text-[#F7F8F8] transition-colors">Documentation</a>
-          <a href="#" class="hover:text-[#F7F8F8] transition-colors">Themes</a>
+          <a href="https://github.com/lonestill/novashell#features" target="_blank" class="hover:text-[#F7F8F8] transition-colors">{{ features() }}</a>
+          <a href="https://github.com/lonestill/novashell#installation" target="_blank" class="hover:text-[#F7F8F8] transition-colors">{{ installation() }}</a>
+          <a href="https://github.com/lonestill/novashell/blob/main/COMMANDS.md" target="_blank" class="hover:text-[#F7F8F8] transition-colors">{{ documentation() }}</a>
+          <a href="https://github.com/lonestill/novashell" target="_blank" class="hover:text-[#F7F8F8] transition-colors">{{ github() }}</a>
         </div>
 
         <!-- Actions -->
@@ -31,9 +31,14 @@ import { LucideIconComponent } from './lucide-icon.component';
           <a href="https://github.com/lonestill/novashell" target="_blank" class="text-[#8A8F98] hover:text-[#F7F8F8] transition-colors">
             <lucide-icon name="github" [size]="20" className="w-5 h-5" />
           </a>
-          <button class="bg-[#F7F8F8] hover:bg-[#D0D3D6] text-black text-[13px] px-3.5 py-1.5 rounded-md transition-all font-medium">
-            Get Started
+          <button 
+            (click)="toggleLanguage()"
+            class="text-[#8A8F98] hover:text-[#F7F8F8] transition-colors text-[13px] font-medium px-2 py-1 rounded">
+            {{ langButton() }}
           </button>
+          <a href="https://github.com/lonestill/novashell#installation" target="_blank" class="bg-[#F7F8F8] hover:bg-[#D0D3D6] text-black text-[13px] px-3.5 py-1.5 rounded-md transition-all font-medium">
+            {{ getStarted() }}
+          </a>
         </div>
 
       </div>
@@ -41,4 +46,17 @@ import { LucideIconComponent } from './lucide-icon.component';
   `,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class NavbarComponent {}
+export class NavbarComponent {
+  i18n = inject(I18nService);
+  
+  features = computed(() => this.i18n.t('nav.features'));
+  installation = computed(() => this.i18n.t('nav.installation'));
+  documentation = computed(() => this.i18n.t('nav.documentation'));
+  github = computed(() => this.i18n.t('nav.github'));
+  getStarted = computed(() => this.i18n.t('nav.getStarted'));
+  langButton = computed(() => this.i18n.currentLanguage() === 'ru' ? 'EN' : 'RU');
+  
+  toggleLanguage() {
+    this.i18n.setLanguage(this.i18n.currentLanguage() === 'ru' ? 'en' : 'ru');
+  }
+}

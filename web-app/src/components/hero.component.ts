@@ -1,9 +1,9 @@
-
-import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, computed } from '@angular/core';
 import { SnippetComponent } from './snippet.component';
 import { NgStyle } from '@angular/common';
 import { LucideIconComponent } from './lucide-icon.component';
 import { ConsoleComponent } from './console.component';
+import { I18nService } from '../services/i18n.service';
 
 @Component({
   selector: 'app-hero',
@@ -12,34 +12,21 @@ import { ConsoleComponent } from './console.component';
   template: `
     <section class="w-full max-w-[1200px] px-6 pt-32 pb-24 flex flex-col items-center text-center perspective-container">
       
-      <!-- Badge -->
-      <div class="animate-fade-in-up opacity-0" style="animation-delay: 100ms">
-        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/[0.08] bg-white/[0.02] text-[13px] text-[#B4BCD0] hover:border-white/[0.16] hover:bg-white/[0.04] transition-all cursor-pointer backdrop-blur-md mb-8 shadow-sm">
-          <span class="flex items-center justify-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#5E6AD2] text-white tracking-wide">RELEASE</span>
-          <span>NovaShell v1.0.0 Available</span>
-          <lucide-icon name="chevronRight" [size]="14" className="w-3.5 h-3.5 text-[#8A8F98]" [strokeWidth]="1.5" />
-        </div>
-      </div>
-
       <!-- Title -->
       <h1 class="text-5xl md:text-[80px] leading-[1.1] font-semibold tracking-[-0.02em] text-[#F7F8F8] mb-8 animate-fade-in-up opacity-0" style="animation-delay: 200ms">
-        The interactive shell for <br class="hidden md:block" />
-        <span class="text-transparent bg-clip-text bg-gradient-to-b from-[#5E6AD2] to-[#8C9EFF]">modern developers.</span>
+        {{ title1() }} <br class="hidden md:block" />
+        <span class="text-transparent bg-clip-text bg-gradient-to-b from-[#5E6AD2] to-[#8C9EFF]">{{ titleModern() }}</span>
       </h1>
 
       <!-- Subtitle -->
       <p class="text-[19px] md:text-[21px] text-[#8A8F98] max-w-2xl mb-12 leading-relaxed tracking-tight animate-fade-in-up opacity-0" style="animation-delay: 300ms">
-        A custom cross-platform CLI built with Node.js. <br class="hidden md:block"/>
-        Smart suggestions, bookmarks, and built-in productivity tools.
+        {{ subtitle() }} <br class="hidden md:block"/>
+        {{ subtitle2() }}
       </p>
 
       <!-- Actions -->
       <div class="flex flex-col sm:flex-row items-center gap-4 mb-20 animate-fade-in-up opacity-0" style="animation-delay: 400ms">
          <app-snippet />
-         <button class="h-12 px-8 rounded-full text-[#F7F8F8] font-medium text-[15px] hover:bg-white/5 transition-all flex items-center gap-2 group">
-           Read Documentation
-           <lucide-icon name="chevronRight" [size]="16" className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" [strokeWidth]="1.5" />
-         </button>
       </div>
 
       <!-- Interactive Console -->
@@ -80,4 +67,12 @@ import { ConsoleComponent } from './console.component';
   `],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class HeroComponent {}
+export class HeroComponent {
+  i18n = inject(I18nService);
+  
+  // Computed translations for reactivity
+  title1 = computed(() => this.i18n.t('hero.title'));
+  titleModern = computed(() => this.i18n.t('hero.titleModern'));
+  subtitle = computed(() => this.i18n.t('hero.subtitle'));
+  subtitle2 = computed(() => this.i18n.t('hero.subtitle2'));
+}
