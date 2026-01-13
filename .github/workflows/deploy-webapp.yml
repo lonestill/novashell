@@ -39,6 +39,8 @@ jobs:
       - name: Build
         working-directory: ./web-app
         run: npm run build
+        env:
+          NG_APP_BASE_HREF: /novashell/web-app/web-app/
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

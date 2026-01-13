@@ -22,7 +22,7 @@
           "configurations": {
             "production": {
               "outputHashing": "all",
-              "baseHref": "/"
+              "baseHref": "/novashell/web-app/"
             },
             "development": {
               "optimization": false,
