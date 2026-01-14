@@ -1,104 +1,124 @@
-# NovaShell
 
-A custom cross-platform CLI shell/console built with Node.js. This interactive shell provides a custom command-line interface with built-in commands and the ability to execute system commands.
 
-## Features
+# 🚀 NovaShell
 
-- 🚀 **Interactive Shell**: Full-featured interactive command-line interface
-- 🌍 **Cross-Platform**: Works on Windows, macOS, and Linux
-- 📝 **Built-in Commands**: Essential commands like `cd`, `ls`, `cat`, `echo`, etc.
-- 🔄 **System Command Execution**: Run any system command (git, npm, etc.)
-- 📜 **Command History**: Navigate through command history with arrow keys
-- 🎨 **Colored Output**: Beautiful colored prompt and output
-- 🔍 **Auto-completion**: Tab completion for commands
-- ⚙️ **Custom Commands**: Create custom commands from strings or JavaScript files
-- 🎯 **Smart Suggestions**: Context-aware command suggestions
-- 📊 **Statistics**: Command usage statistics
-- 🔖 **Bookmarks**: Directory bookmarks for quick navigation
-- 📋 **Todo List**: Built-in task management
-- 🎨 **Themes**: Customizable prompt themes
+<p align="center">
+  <img src="https://img.shields.io/github/license/lonestill/novashell?style=for-the-badge&color=5D2FBC" alt="license">
+  <img src="https://img.shields.io/github/stars/lonestill/novashell?style=for-the-badge&color=5D2FBC" alt="stars">
+  <img src="https://img.shields.io/github/v/release/lonestill/novashell?style=for-the-badge&color=5D2FBC" alt="version">
+  <img src="https://img.shields.io/badge/Node.js-%3E%3D16.0.0-brightgreen?style=for-the-badge&logo=node.js" alt="node version">
+</p>
 
-## Installation
+<p align="center">
+  <strong>NovaShell</strong> is a powerful, cross-platform CLI shell built with Node.js. It bridges the gap between traditional system shells and modern developer needs, offering built-in productivity tools and seamless JavaScript extensibility.
+</p>
 
-### Quick Install (Recommended)
+---
 
-**Linux/macOS:**
+## ✨ Key Features
+
+* 🚀 **Interactive Environment**: A full-featured interactive shell with a beautiful colored prompt.
+* 🌍 **Cross-Platform**: Consistent experience across Windows, macOS, and Linux.
+* ⚙️ **Extensible via JS**: Create custom commands using simple strings or full JavaScript files.
+* 🔍 **Smart Workflow**: Context-aware auto-completion (Tab) and command history navigation.
+* 📋 **Built-in Productivity**: Integrated **Todo List** and **Directory Bookmarks** to keep you focused.
+* 📊 **Deep Insights**: Command usage statistics and detailed system information at your fingertips.
+* 🎨 **Theming Engine**: Fully customizable themes to match your terminal aesthetics.
+
+---
+
+
 ```bash
-curl -fsSL https://raw.githubusercontent.com/lonestill/novashell/main/install.sh | bash
+# Example usage
+novashell > sysinfo
+novashell > todo add "Refactor the parser"
+novashell > bookmark save current_project
+
+```
+
+---
+
+## ⚡ Quick Start
+
+### Automatic Installation (Recommended)
+
+**Linux / macOS:**
+
+```bash
+curl -fsSL [https://raw.githubusercontent.com/lonestill/novashell/main/install.sh](https://raw.githubusercontent.com/lonestill/novashell/main/install.sh) | bash
+
 ```
 
 **Windows (PowerShell):**
+
 ```powershell
-iwr -useb https://raw.githubusercontent.com/lonestill/novashell/main/install.ps1 | iex
+iwr -useb [https://raw.githubusercontent.com/lonestill/novashell/main/install.ps1](https://raw.githubusercontent.com/lonestill/novashell/main/install.ps1) | iex
+
 ```
 
 ### Manual Installation
 
-1. Clone this repository:
+1. **Clone the repository:**
 ```bash
-git clone https://github.com/lonestill/novashell
+git clone [https://github.com/lonestill/novashell](https://github.com/lonestill/novashell)
 cd novashell
+
 ```
 
-2. Install dependencies:
+
+2. **Install dependencies:**
 ```bash
 npm install
+
 ```
 
-3. Link globally:
+
+3. **Link globally:**
 ```bash
 npm link
+
 ```
 
-## Usage
 
-Run the shell:
-```bash
-novashell
-```
 
-Or from the project directory:
-```bash
-npm start
-# or
-node index.js
-```
+---
 
-## Testing
+## 🛠 Command Reference
 
-Run tests:
-```bash
-npm test
-```
+NovaShell supports all your standard system commands (`git`, `npm`, `python`, etc.) plus these built-in power-ups:
 
-## Documentation
+| Category | Commands | Description |
+| --- | --- | --- |
+| **Navigation** | `cd`, `ls`, `pwd`, `bookmark` | Enhanced file system navigation |
+| **File Ops** | `cat`, `type`, `echo` | Quick file viewing and output |
+| **System** | `sysinfo`, `env`, `history` | Monitor system and session state |
+| **Productivity** | `todo`, `clear` | Manage tasks and workspace |
+| **Config** | `config`, `themes` | Personalize your shell experience |
 
-- **[COMMANDS.md](COMMANDS.md)** - Complete command reference with detailed descriptions and examples
+> 📖 **Full Documentation**: Check out [COMMANDS.md](https://www.google.com/search?q=COMMANDS.md) for detailed descriptions and examples.
 
-## Built-in Commands
+---
 
-| Command | Description |
-|---------|-------------|
-| `help` | Display help message |
-| `clear` / `cls` | Clear the terminal screen |
-| `exit` / `quit` | Exit the shell |
-| `echo <text>` | Print text to console |
-| `cd <directory>` | Change directory |
-| `pwd` | Print current directory |
-| `ls` / `dir` | List files and directories |
-| `cat` / `type <file>` | Display file contents |
-| `history` | Show command history |
-| `env` | Display environment variables |
-| `sysinfo` / `sys` | Display system information |
-| `config` | Manage configuration (aliases, custom commands) |
-| ... and many more! |
+---
 
-See [COMMANDS.md](COMMANDS.md) for complete documentation.
+## 🤝 Contributing
 
-## Contributing
+Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-## License
+---
 
-MIT
+## 📜 License
+
+Distributed under the **MIT License**. See `LICENSE` for more information.
+
+---
+
+<p align="center">
+Developed with ❤️ by <a href="https://www.google.com/search?q=https://github.com/lonestill">lonestill</a>
+</p>
