@@ -42,6 +42,13 @@ novashell > bookmark save current_project
 
 ### Automatic Installation (Recommended)
 
+
+**ALL Systems:**
+
+```bash
+npm install novashell
+
+```
 **Linux / macOS:**
 
 ```bash
