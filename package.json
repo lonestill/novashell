@@ -1,6 +1,6 @@
 {
   "name": "novashell",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Powerful cross-platform CLI shell built with Node.js featuring productivity tools, themes, and JS extensibility.",
   "main": "index.js",
   "type": "module",
